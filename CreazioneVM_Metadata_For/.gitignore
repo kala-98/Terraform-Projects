@@ -1,7 +1,0 @@
-.terraform/
-.terraform.lock.hcl
-*.pdf
-id_rsa*
-*.out
-terraform*
-test.txt

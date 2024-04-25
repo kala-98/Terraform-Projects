@@ -1,4 +1,5 @@
 .terraform/
+CreazioneVM_MetaData_For/*md
 .terraform.lock.hcl
 *.pdf
 id_rsa*
