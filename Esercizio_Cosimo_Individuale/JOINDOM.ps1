@@ -3,7 +3,7 @@ $dnsAddress= Get-DnsClientServerAddress -InterfaceIndex $dns.InterfaceIndex -Add
 Set-DnsClientServerAddress -InterfaceIndex $dns.InterfaceIndex -ServerAddresses ("10.10.0.4",$dnsAddress.ServerAddresses)
 
 $dc = "dom.it" # Dominio su cui effetuare la Join
-$pw = "P@ssw0rd1234" | ConvertTo-SecureString -asPlainText –Force # password dell'amministratore di dominio
+$pw = "1YPnA*FvPp#2an" | ConvertTo-SecureString -asPlainText –Force # password dell'amministratore di dominio
 #utente Amministratore
 $usr = "$dc\fsAdmin"
 $creds = New-Object System.Management.Automation.PSCredential($usr,$pw)

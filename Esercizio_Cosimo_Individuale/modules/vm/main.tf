@@ -2,16 +2,18 @@
 ##################################### CREAZIONE VM #####################################
 
 
-
+# Recupero la password d'accesso per la configurazione delle VM dal Key Vault
 data "azurerm_key_vault" "kv"{
   name                = "keystr12345678"
   resource_group_name =  "myResourceGroup"
 }
 
 data "azurerm_key_vault_secret" "password" {
-  name = "password"
+  name = "password-terraform"
   key_vault_id = data.azurerm_key_vault.kv.id
 }
+
+##################################### VM Server con AD #####################################
 
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "myterraformnsg" {
@@ -33,10 +35,8 @@ resource "azurerm_network_security_group" "myterraformnsg" {
 
 }
 
-##################################### VM-1 con AD #####################################
-
 data "azurerm_subnet" "firstvnetsub1" {
-  name = "Subnet-1"
+  name = var.firstsubnet
   resource_group_name = var.rg_name
   virtual_network_name = var.firstvnet
 }
@@ -50,7 +50,8 @@ resource "azurerm_network_interface" "dc01_nic" {
   ip_configuration {
     name                          = "dc01_nic"
     subnet_id                     = data.azurerm_subnet.firstvnetsub1.id
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address = "10.10.0.4"
     #public_ip_address_id          = azurerm_public_ip.myterraformpublicip.id #Added by ca
   }
 }
@@ -76,7 +77,7 @@ resource "azurerm_windows_virtual_machine" "dc01" {
   resource_group_name = var.rg_name
   location            = var.location-1
   size                = var.vm_size
-  admin_username      = "fsAdmin"
+  admin_username      = var.win_username_server
   admin_password      = data.azurerm_key_vault_secret.password.value
   network_interface_ids = [
     azurerm_network_interface.dc01_nic.id
@@ -158,7 +159,7 @@ resource "azurerm_network_security_group" "myterraformnsg2" {
 
 
 data "azurerm_subnet" "firstvnetsub2" {
-  name = "Subnet-2"
+  name = var.secondsubnet
   resource_group_name = var.rg_name
   virtual_network_name = var.secondvnet
 }
@@ -173,7 +174,7 @@ resource "azurerm_network_interface" "client01_nic" {
     name                          = "client01_nic"
     subnet_id                     = data.azurerm_subnet.firstvnetsub2.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.myterraformpublicip2.id #Added by ca
+    public_ip_address_id          = azurerm_public_ip.myterraformpublicip2.id
   }
 }
 
@@ -216,15 +217,13 @@ resource "azurerm_windows_virtual_machine" "client01" {
     version   = "latest"
   }
 
-  depends_on = [ azurerm_windows_virtual_machine.dc01 ]
+  depends_on = [ azurerm_windows_virtual_machine.dc01, azurerm_virtual_machine_extension.install_ad ]
 }
-
 
 
 #Install Join Domain on the client01 VM
 resource "azurerm_virtual_machine_extension" "join_domain" {
   name                 = "join_domain"
-#  resource_group_name  = azurerm_resource_group.main.name
   virtual_machine_id   = azurerm_windows_virtual_machine.client01.id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
@@ -237,7 +236,7 @@ resource "azurerm_virtual_machine_extension" "join_domain" {
   SETTINGS
 }
 
-#Variable input for the ADDS.ps1 script
+#Variable input for the JOINDOM.ps1 script
 data "template_file" "JOINDOMAIN" {
     template = "${file("JOINDOM.ps1")}"
 #     vars = {

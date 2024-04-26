@@ -18,6 +18,21 @@ variable "secondvnet" {
     default = "VNet02"
 }
 
+variable "firstsubnet" {
+    default = "Subnet-1"
+}
+
+variable "secondsubnet" {
+    default = "Subnet-2"
+}
+
+variable "win_username_server" {
+  description = "Windows node username"
+  type        = string
+  sensitive   = false
+  default = "fsAdmin"
+}
+
 variable "win_username" {
   description = "Windows node username"
   type        = string
