@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=3.99.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "3.0.0"
+    }
   }
 }
 
@@ -16,13 +20,13 @@ provider "azurerm" {
 
 provider "http" {}
 
-data "azurerm_key_vault" "kv"{
+data "azurerm_key_vault" "kv" {
   name                = "keystr12345678"
-  resource_group_name =  "myResourceGroup"
+  resource_group_name = "myResourceGroup"
 }
 
 data "azurerm_key_vault_secret" "password" {
-  name = "apiweather"
+  name         = "apiweather"
   key_vault_id = data.azurerm_key_vault.kv.id
 }
 
@@ -147,17 +151,12 @@ resource "azurerm_storage_table_entity" "table240420241" {
   }
 }
 
-# output "temperature_in_milan" {
-#   value = [for temperature in data.http.temperature : jsondecode(temperature.body)["current"]["temp_c"]]
-#   #value = jsondecode(data.http.temperature[each.key].body)["current"]["temp_c"]
-# }
-
 # Creazione coda
 resource "azurerm_storage_queue" "example" {
   name                 = "mysamplequeue"
   storage_account_name = var.my_Storage_account
 
-  depends_on = [ azurerm_storage_account.sa ]
+  depends_on = [azurerm_storage_account.sa]
 }
 
 
