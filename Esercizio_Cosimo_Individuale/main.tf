@@ -23,34 +23,34 @@ provider "azurerm" {
 
 # Create resource group
 resource "azurerm_resource_group" "rg" {
-  name      = var.rg_name
-  location  = var.location-1
+  name     = var.rg_name
+  location = var.location-1
 }
 
 module "rete" {
-    source = "./modules/rete"
-    rg_name = var.rg_name
-    location-1 = var.location-1
-    location-2 = var.location-2
+  source     = "./modules/rete"
+  rg_name    = var.rg_name
+  location-1 = var.location-1
+  location-2 = var.location-2
 
-    depends_on = [ azurerm_resource_group.rg ]
+  depends_on = [azurerm_resource_group.rg]
 }
 
 module "peering" {
-    source = "./modules/peering"
-    rg_name = var.rg_name
-    location-1 = var.location-1
-    location-2 = var.location-2
+  source     = "./modules/peering"
+  rg_name    = var.rg_name
+  location-1 = var.location-1
+  location-2 = var.location-2
 
-    depends_on = [ module.rete ]
+  depends_on = [module.rete]
 }
 
 module "vm" {
-    source = "./modules/vm"
-    rg_name = var.rg_name
-    location-1 = var.location-1
-    location-2 = var.location-2
+  source     = "./modules/vm"
+  rg_name    = var.rg_name
+  location-1 = var.location-1
+  location-2 = var.location-2
 
-    depends_on = [ module.rete ]
+  depends_on = [module.rete]
 }
 

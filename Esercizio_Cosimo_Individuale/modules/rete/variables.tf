@@ -10,6 +10,10 @@ variable "location-2" {
   
 }
 
+variable "location-3" {
+  default = "Central US"
+}
+
 variable "first_vnet" {
     default = "VNet01"
     description ="Name of first Virtual network"
@@ -60,4 +64,9 @@ variable "first_vnet_sub3_name" {
 variable "secod_vnet_sub1_AddressSpace" {
     default = "10.20.0.0/24"
     description = "Addres space for 1 subnet into second virtual network"
+}
+
+variable "third_vnet" {
+    default = "VNet03"
+    description ="Name of third Virtual network"
 }

@@ -48,19 +48,7 @@ resource "azurerm_subnet" "secondvnetsub1" {
 
 #################################################################
 
-
 # VPN GATEWAY
-
-# data "azurerm_virtual_network" "vpnvnet" {
-#   name = azurerm_virtual_network.firstvnet.name
-#   resource_group_name = data.azurerm_resource_group.vpnRG.name
-# }
-
-# data "azurerm_subnet" "vpnsub" {
-#   name = azurerm_subnet.firstvnetsub2.name
-#   resource_group_name = var.rg_name
-#   virtual_network_name = azurerm_virtual_network.firstvnet.name
-# }
 
 # Create Public IP for VPN Gateway 
 resource "azurerm_public_ip" "vpnPiptf" {
@@ -120,5 +108,24 @@ EOF
   }
 }
 
+
+
+# Creazione terza vnet
+resource "azurerm_virtual_network" "thirdvnet" {
+  name          = "VNet03"
+  location      = var.location-3
+  address_space = ["10.30.0.0/16"]
+  resource_group_name = var.rg_name
+}
+
+# subnet per la terza vnet
+resource "azurerm_subnet" "thirdvnetsub3" {
+  name = "Subnet-3"
+  resource_group_name = var.rg_name
+  virtual_network_name = azurerm_virtual_network.thirdvnet.name
+  address_prefixes = ["10.30.0.0/24"]
+
+  depends_on = [ azurerm_virtual_network.thirdvnet ]
+}
 
 

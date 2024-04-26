@@ -20,6 +20,11 @@ variable "second_vnet" {
     description ="Name of second Virtual network"
 }
 
+variable "third_vnet" {
+    default = "VNet03"
+    description ="Name of second Virtual network"
+}
+
 variable "vpngateway" {
     default = "VNet1GW"
 }
