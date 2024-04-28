@@ -81,23 +81,34 @@ resource "azurerm_storage_container" "sc" {
   depends_on = [ azurerm_storage_account.sa ]
 }
 
-# Upload PowerShell scripts to the blob container
+# Upload file per l'installazione di AD
 resource "azurerm_storage_blob" "script1" {
-  name                   = "test.ps1"
-  storage_account_name   = azurerm_storage_account.sa.name
-  storage_container_name = azurerm_storage_container.sc.name
-  type                   = "Block"
-  source                 = "scripts/test2.ps1"
-
-  depends_on = [ azurerm_storage_container.sc ]
-}
-
-resource "azurerm_storage_blob" "script2" {
   name                   = "ADDS.ps1"
   storage_account_name   = azurerm_storage_account.sa.name
   storage_container_name = azurerm_storage_container.sc.name
   type                   = "Block"
   source                 = "scripts/ADDS.ps1"
+
+  depends_on = [ azurerm_storage_container.sc ]
+}
+
+# Upload file per la creazione della struttura utenti
+resource "azurerm_storage_blob" "script2" {
+  name                   = "CreaOrganizzazioneAD.ps1"
+  storage_account_name   = azurerm_storage_account.sa.name
+  storage_container_name = azurerm_storage_container.sc.name
+  type                   = "Block"
+  source                 = "scripts/CreaOrganizzazioneAD.ps1"
+
+  depends_on = [ azurerm_storage_container.sc ]
+}
+
+resource "azurerm_storage_blob" "fileCSV" {
+  name                   = "Organizzazione.csv"
+  storage_account_name   = azurerm_storage_account.sa.name
+  storage_container_name = azurerm_storage_container.sc.name
+  type                   = "Block"
+  source                 = "scripts/Organizzazione.csv"
 
   depends_on = [ azurerm_storage_container.sc ]
 }
@@ -194,7 +205,8 @@ resource "azurerm_virtual_machine_extension" "install_scripts" {
 
   protected_settings = <<SETTINGS
   {     
-    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.install_scripts.rendered)}')) | Out-File -filepath master_script.ps1\" && powershell -ExecutionPolicy Unrestricted -File master_script.ps1 -nomeStorage ${data.template_file.install_scripts.vars.nomeStorage} -nomeContainer ${data.template_file.install_scripts.vars.nomeContainer} -nomeFile ${data.template_file.install_scripts.vars.nomeFile} -url ${data.template_file.install_scripts.vars.url} -output ${data.template_file.install_scripts.vars.output} -nomeFile2 ${data.template_file.install_scripts.vars.nomeFile2} -url2 ${data.template_file.install_scripts.vars.url2} -output2 ${data.template_file.install_scripts.vars.output2} -Domain_DNSName ${data.template_file.install_scripts.vars.Domain_DNSName} -Domain_NETBIOSName ${data.template_file.install_scripts.vars.Domain_NETBIOSName} -SafeModeAdministratorPassword ${data.template_file.install_scripts.vars.SafeModeAdministratorPassword}"
+    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.install_scripts.rendered)}')) | Out-File -filepath master_script.ps1\" && powershell -ExecutionPolicy Unrestricted -File master_script.ps1 -url ${data.template_file.install_scripts.vars.url} -output ${data.template_file.install_scripts.vars.output} -Domain_DNSName ${data.template_file.install_scripts.vars.Domain_DNSName} -Domain_NETBIOSName ${data.template_file.install_scripts.vars.Domain_NETBIOSName} -SafeModeAdministratorPassword ${data.template_file.install_scripts.vars.SafeModeAdministratorPassword} -url2 ${data.template_file.install_scripts.vars.url2} -output2 ${data.template_file.install_scripts.vars.output2} -Dom1 ${data.template_file.install_scripts.vars.Dom1} -Dom2 ${data.template_file.install_scripts.vars.Dom2} -url3 ${data.template_file.install_scripts.vars.url3} -output3 ${data.template_file.install_scripts.vars.output3}"
+   
   }
   SETTINGS
   depends_on = [ azurerm_windows_virtual_machine.dc01, azurerm_storage_blob.script1 ]
@@ -203,20 +215,25 @@ resource "azurerm_virtual_machine_extension" "install_scripts" {
 data "template_file" "install_scripts" {
     template = "${file("scripts/master_script.ps1")}"
       vars = {
-        nomeStorage = "${azurerm_storage_account.sa.name}"
-        nomeContainer = "${azurerm_storage_container.sc.name}"
-
-        nomeFile = "${azurerm_storage_blob.script1.name}"
-        url = "https://${azurerm_storage_account.sa.name}.blob.core.windows.net/${azurerm_storage_container.sc.name}/${azurerm_storage_blob.script1.name}"
-        output = "C:/Temp/script_test.ps1"
-
-        #######################################################
         # Installazione AD e Dominio
-        nomeFile2 = "${azurerm_storage_blob.script2.name}"
-        url2 = "https://${azurerm_storage_account.sa.name}.blob.core.windows.net/${azurerm_storage_container.sc.name}/${azurerm_storage_blob.script2.name}"
-        output2 = "C:/Temp/script_install_ad.ps1"
+        url = "https://${azurerm_storage_account.sa.name}.blob.core.windows.net/${azurerm_storage_container.sc.name}/${azurerm_storage_blob.script1.name}"
+        output = "C:/Temp/script_install_ad.ps1"
         Domain_DNSName = var.Domain_DNSName
         Domain_NETBIOSName = var.netbios_name
         SafeModeAdministratorPassword = "${data.azurerm_key_vault_secret.password.value}"
-      }
+
+        #######################################################
+      
+        ## Creazione organizzazione
+
+        # Recupero lo script
+        url2 = "https://${azurerm_storage_account.sa.name}.blob.core.windows.net/${azurerm_storage_container.sc.name}/${azurerm_storage_blob.script2.name}"
+        output2 = "C:/Temp/script_create_org.ps1"    
+
+        # Recupero il csv
+        url3 = "https://${azurerm_storage_account.sa.name}.blob.core.windows.net/${azurerm_storage_container.sc.name}/${azurerm_storage_blob.fileCSV.name}"
+        output3 = "C:/Temp/Organizzazione.csv"
+        Dom1 = "dom"
+        Dom2 = "it"
+    }
 }

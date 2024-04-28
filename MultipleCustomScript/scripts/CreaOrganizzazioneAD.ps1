@@ -14,7 +14,7 @@ Set-executionpolicy -executionpolicy unrestricted -Force
 Import-Module ActiveDirectory
 #New-Item -ItemType Directory -Path C:\temp
 #cd C:\temp    # Cartella di lavoro
-$ADUsers = Import-Csv .\$nomeFileCSV -Delimiter ";" 
+$ADUsers = Import-Csv $nomeFileCSV -Delimiter ";" 
 $UOs = $(foreach ($xx in $ADUsers){
     $xx.UO 
 }) | Sort-Object | Get-Unique
