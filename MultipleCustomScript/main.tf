@@ -93,11 +93,11 @@ resource "azurerm_storage_blob" "script1" {
 }
 
 resource "azurerm_storage_blob" "script2" {
-  name                   = "test2.ps1"
+  name                   = "ADDS.ps1"
   storage_account_name   = azurerm_storage_account.sa.name
   storage_container_name = azurerm_storage_container.sc.name
   type                   = "Block"
-  source                 = "scripts/test2.ps1"
+  source                 = "scripts/ADDS.ps1"
 
   depends_on = [ azurerm_storage_container.sc ]
 }
@@ -194,7 +194,7 @@ resource "azurerm_virtual_machine_extension" "install_scripts" {
 
   protected_settings = <<SETTINGS
   {     
-    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.install_scripts.rendered)}')) | Out-File -filepath master_script.ps1\" && powershell -ExecutionPolicy Unrestricted -File master_script.ps1 -nomeStorage ${data.template_file.install_scripts.vars.nomeStorage} -nomeContainer ${data.template_file.install_scripts.vars.nomeContainer} -nomeFile ${data.template_file.install_scripts.vars.nomeFile} -url ${data.template_file.install_scripts.vars.url} -output ${data.template_file.install_scripts.vars.output}"
+    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.install_scripts.rendered)}')) | Out-File -filepath master_script.ps1\" && powershell -ExecutionPolicy Unrestricted -File master_script.ps1 -nomeStorage ${data.template_file.install_scripts.vars.nomeStorage} -nomeContainer ${data.template_file.install_scripts.vars.nomeContainer} -nomeFile ${data.template_file.install_scripts.vars.nomeFile} -url ${data.template_file.install_scripts.vars.url} -output ${data.template_file.install_scripts.vars.output} -nomeFile2 ${data.template_file.install_scripts.vars.nomeFile2} -url2 ${data.template_file.install_scripts.vars.url2} -output2 ${data.template_file.install_scripts.vars.output2} -Domain_DNSName ${data.template_file.install_scripts.vars.Domain_DNSName} -Domain_NETBIOSName ${data.template_file.install_scripts.vars.Domain_NETBIOSName} -SafeModeAdministratorPassword ${data.template_file.install_scripts.vars.SafeModeAdministratorPassword}"
   }
   SETTINGS
   depends_on = [ azurerm_windows_virtual_machine.dc01, azurerm_storage_blob.script1 ]
@@ -208,6 +208,15 @@ data "template_file" "install_scripts" {
 
         nomeFile = "${azurerm_storage_blob.script1.name}"
         url = "https://${azurerm_storage_account.sa.name}.blob.core.windows.net/${azurerm_storage_container.sc.name}/${azurerm_storage_blob.script1.name}"
-        output = "C:/Temp/master_script1.ps1"
+        output = "C:/Temp/script_test.ps1"
+
+        #######################################################
+        # Installazione AD e Dominio
+        nomeFile2 = "${azurerm_storage_blob.script2.name}"
+        url2 = "https://${azurerm_storage_account.sa.name}.blob.core.windows.net/${azurerm_storage_container.sc.name}/${azurerm_storage_blob.script2.name}"
+        output2 = "C:/Temp/script_install_ad.ps1"
+        Domain_DNSName = var.Domain_DNSName
+        Domain_NETBIOSName = var.netbios_name
+        SafeModeAdministratorPassword = "${data.azurerm_key_vault_secret.password.value}"
       }
 }
