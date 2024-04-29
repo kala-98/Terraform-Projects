@@ -72,11 +72,8 @@ resource "azurerm_virtual_network_peering" "vnet03-vnet01-peer" {
     depends_on = [data.azurerm_virtual_network.vpeeringvnet01, data.azurerm_virtual_network.vpeeringvnet03, data.azurerm_virtual_network_gateway.vpngateway-peering]
 }
 
-<<<<<<< HEAD
-=======
-###############################################################################################
+############################################################################
 
->>>>>>> dev
 # Peering VNet02 to VNet03
 resource "azurerm_virtual_network_peering" "vnet02-vnet03-peer" {
     name                      = "vnet02tovnet03"
