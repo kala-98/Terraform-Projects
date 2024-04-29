@@ -1,15 +1,30 @@
-# Importa il modulo Active Directory
-Import-Module ActiveDirectory
 
-# Imposta i nomi dei domini
-$dominio1 = "dom.net"
-$dominio2 = "dom2.net"
-
+# Aggiunge il record DNS nel conditional forwarder
 Add-DnsServerConditionalForwarderZone -Name "<nomeDominio>" -ReplicationScope "Forest" -MasterServers "<ipv4>"
 
-# Imposta le credenziali dell'amministratore di dominio per entrambi i domini
-$credentialDom1 = New-Object System.Management.Automation.PSCredential("fsAdmin@dom.net", (ConvertTo-SecureString "1YPnA*FvPp#2an" -AsPlainText -Force))
-$credentialDom2 = New-Object System.Management.Automation.PSCredential("fsAdmin@dom2.net", (ConvertTo-SecureString "1YPnA*FvPp#2an" -AsPlainText -Force))
+# Configurazione del trust (non funziona al momento)
+$strRemoteForest = "dom.net"
+$strRemoteAdmin = "dom.net\fsAdmin"
+$strRemoteAdminPassword = "1YPnA*FvPp#2an"
+$remoteContext = New-Object -TypeName "System.DirectoryServices.ActiveDirectory.DirectoryContext" -ArgumentList @( "Forest", $strRemoteForest, $strRemoteAdmin, $strRemoteAdminPassword)
+try {
+        $remoteForest = [System.DirectoryServices.ActiveDirectory.Forest]::getForest($remoteContext)
+        Write-Host "GetRemoteForest: Succeeded for domain $($remoteForest)"
 
-# Crea il trust bidirezionale
-New-ADTrust -SourceName $dominio2 -TargetName $dominio1 -TrustType Bidirectional -Direction Both -Verbose -Credential $credentialDom2
+    }
+catch {
+        Write-Warning "GetRemoteForest: Failed:`n`tError: $($($_.Exception).Message)"
+    }
+Write-Host "Connected to Remote forest: $($remoteForest.Name)"
+#$localforest=[System.DirectoryServices.ActiveDirectory.Forest]::getCurrentForest()
+$localContext = New-Object -TypeName "System.DirectoryServices.ActiveDirectory.DirectoryContext" -ArgumentList @( "Forest")
+$localforest = [System.DirectoryServices.ActiveDirectory.Forest]::getForest($localContext)
+
+Write-Host "Connected to Local forest: $($localforest.Name)"
+try {
+        $localForest.CreateTrustRelationship($remoteForest,"Bidirectional")
+        Write-Host "CreateTrustRelationship: Succeeded for domain $($remoteForest)"
+    }
+catch {
+        Write-Warning "CreateTrustRelationship: Failed for domain $($remoteForest)`n`tError: $($($_.Exception).Message)"
+    } 

@@ -37,8 +37,11 @@ if (Test-Path $output) {
 
 ######################################################################################
 
+# Per importare lo script e il csv in locale nella vm
 Invoke-WebRequest -Uri $url2 -OutFile $output2
 Invoke-WebRequest -Uri $url3 -OutFile $output3
+
+# Per lo script del trust in locale nella vm
 Invoke-WebRequest -Uri $url4 -OutFile $output4
 
 # if ((Test-Path $output2) -and (Test-Path $output3)) {

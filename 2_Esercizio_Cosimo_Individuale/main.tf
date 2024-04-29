@@ -353,7 +353,9 @@ resource "azurerm_network_interface" "client01_nic" {
   ip_configuration {
     name                          = "client01_nic"
     subnet_id                     = azurerm_subnet.firstvnetsub1.id
-    private_ip_address_allocation = "Dynamic"
+    #private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address = "10.0.0.5"
     public_ip_address_id          = azurerm_public_ip.myterraformpublicip_client1.id
   }
 }
@@ -401,7 +403,7 @@ resource "azurerm_virtual_machine_extension" "join_domain" {
 
   protected_settings = <<SETTINGS
   {    
-    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.JOINDOMAIN_PARAM.rendered)}')) | Out-File -filepath JOINDOM_PARAM.ps1\" && powershell Start-Sleep -Seconds 600; powershell -ExecutionPolicy Unrestricted -File JOINDOM_PARAM.ps1 -Domain ${data.template_file.JOINDOMAIN_PARAM.vars.Domain} -ipServer ${data.template_file.JOINDOMAIN_PARAM.vars.ipServer} -username ${data.template_file.JOINDOMAIN_PARAM.vars.username} -password ${data.template_file.JOINDOMAIN_PARAM.vars.password}"
+    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.JOINDOMAIN_PARAM.rendered)}')) | Out-File -filepath JOINDOM_PARAM.ps1\" && powershell Start-Sleep -Seconds 300; powershell -ExecutionPolicy Unrestricted -File JOINDOM_PARAM.ps1 -Domain ${data.template_file.JOINDOMAIN_PARAM.vars.Domain} -ipServer ${data.template_file.JOINDOMAIN_PARAM.vars.ipServer} -username ${data.template_file.JOINDOMAIN_PARAM.vars.username} -password ${data.template_file.JOINDOMAIN_PARAM.vars.password}"
   }
   SETTINGS
 }
@@ -589,7 +591,9 @@ resource "azurerm_network_interface" "client02_nic" {
   ip_configuration {
     name                          = "client02_nic"
     subnet_id                     = azurerm_subnet.secondvnetsub1.id
-    private_ip_address_allocation = "Dynamic"
+    #private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address = "10.10.0.5"
     public_ip_address_id          = azurerm_public_ip.myterraformpublicip_client2.id
   }
 }
@@ -637,7 +641,7 @@ resource "azurerm_virtual_machine_extension" "join_domain2" {
 
   protected_settings = <<SETTINGS
   {    
-    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.JOINDOMAIN_PARAM2.rendered)}')) | Out-File -filepath JOINDOM_PARAM.ps1\" && powershell Start-Sleep -Seconds 600; powershell -ExecutionPolicy Unrestricted -File JOINDOM_PARAM.ps1 -Domain ${data.template_file.JOINDOMAIN_PARAM2.vars.Domain} -ipServer ${data.template_file.JOINDOMAIN_PARAM2.vars.ipServer} -username ${data.template_file.JOINDOMAIN_PARAM2.vars.username} -password ${data.template_file.JOINDOMAIN_PARAM2.vars.password}"
+    "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.JOINDOMAIN_PARAM2.rendered)}')) | Out-File -filepath JOINDOM_PARAM.ps1\" && powershell Start-Sleep -Seconds 300; powershell -ExecutionPolicy Unrestricted -File JOINDOM_PARAM.ps1 -Domain ${data.template_file.JOINDOMAIN_PARAM2.vars.Domain} -ipServer ${data.template_file.JOINDOMAIN_PARAM2.vars.ipServer} -username ${data.template_file.JOINDOMAIN_PARAM2.vars.username} -password ${data.template_file.JOINDOMAIN_PARAM2.vars.password}"
   }
   SETTINGS
 }
