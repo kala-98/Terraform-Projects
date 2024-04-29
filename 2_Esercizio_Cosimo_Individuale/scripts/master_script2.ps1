@@ -36,17 +36,18 @@ if (Test-Path $output) {
 Invoke-WebRequest -Uri $url2 -OutFile $output2
 Invoke-WebRequest -Uri $url3 -OutFile $output3
 
-if ((Test-Path $output2) -and (Test-Path $output3)) {
-    #Start-Process powershell.exe -ArgumentList "-File $output2", "-Dom1 $Dom1", "-Dom2 $Dom2", "-nomeFileCSV $output3"
+# if ((Test-Path $output2) -and (Test-Path $output3)) {
+#     #Start-Process powershell.exe -ArgumentList "-File $output2", "-Dom1 $Dom1", "-Dom2 $Dom2", "-nomeFileCSV $output3"
 
-    # Crea una nuova attività pianificata per eseguire lo script al riavvio
-    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File '$output2' -Dom1 '$Dom1' -Dom2 '$Dom2' -nomeFileCSV '$output3'"
-    $trigger = New-ScheduledTaskTrigger -AtStartup
-    $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "CreaOrganizzazioneAD" -Principal $principal
+#     # Crea una nuova attività pianificata per eseguire lo script al riavvio
+#     $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File '$output2' -Dom1 '$Dom1' -Dom2 '$Dom2' -nomeFileCSV '$output3'"
+#     $trigger = New-ScheduledTaskTrigger -AtStartup
+#     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+#     Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "CreaOrganizzazioneAD" -Principal $principal
 
-    Get-Date > "C:\\Temp\\DataRegistrata_create_org.txt"
-} else {
-    Write-Output "Errore" > "C:\\Temp\\Errore_create_org.txt"
-}
+#     Get-Date > "C:\\Temp\\DataRegistrata_create_org.txt"
+# } else {
+#     Write-Output "Errore" > "C:\\Temp\\Errore_create_org.txt"
+# }
 
+Add-DnsServerConditionalForwarderZone -Name "dom.net" -ReplicationScope "Forest" -MasterServers "10.0.0.4"

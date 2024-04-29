@@ -17,7 +17,11 @@ param
 
     # Per recuperare il file csv per lo script sopra
     [Parameter(ValuefromPipeline=$true,Mandatory=$true)] [String]$url3,
-    [Parameter(ValuefromPipeline=$true,Mandatory=$true)] [String]$output3
+    [Parameter(ValuefromPipeline=$true,Mandatory=$true)] [String]$output3,
+
+    # Per recuperare lo script per il trust
+    [Parameter(ValuefromPipeline=$true,Mandatory=$true)] [String]$url4,
+    [Parameter(ValuefromPipeline=$true,Mandatory=$true)] [String]$output4
 )
 
 Set-TimeZone -Id "W. Europe Standard Time"
@@ -35,18 +39,19 @@ if (Test-Path $output) {
 
 Invoke-WebRequest -Uri $url2 -OutFile $output2
 Invoke-WebRequest -Uri $url3 -OutFile $output3
+Invoke-WebRequest -Uri $url4 -OutFile $output4
 
-if ((Test-Path $output2) -and (Test-Path $output3)) {
-    #Start-Process powershell.exe -ArgumentList "-File $output2", "-Dom1 $Dom1", "-Dom2 $Dom2", "-nomeFileCSV $output3"
+# if ((Test-Path $output2) -and (Test-Path $output3)) {
+#     #Start-Process powershell.exe -ArgumentList "-File $output2", "-Dom1 $Dom1", "-Dom2 $Dom2", "-nomeFileCSV $output3"
 
-    # Crea una nuova attività pianificata per eseguire lo script al riavvio
-    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File '$output2' -Dom1 '$Dom1' -Dom2 '$Dom2' -nomeFileCSV '$output3'"
-    $trigger = New-ScheduledTaskTrigger -AtStartup
-    $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "CreaOrganizzazioneAD" -Principal $principal
+#     # Crea una nuova attività pianificata per eseguire lo script al riavvio
+#     $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File '$output2' -Dom1 '$Dom1' -Dom2 '$Dom2' -nomeFileCSV '$output3'"
+#     $trigger = New-ScheduledTaskTrigger -AtStartup
+#     $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+#     Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "CreaOrganizzazioneAD" -Principal $principal
 
-    Get-Date > "C:\\Temp\\DataRegistrata_create_org.txt"
-} else {
-    Write-Output "Errore" > "C:\\Temp\\Errore_create_org.txt"
-}
+#     Get-Date > "C:\\Temp\\DataRegistrata_create_org.txt"
+# } else {
+#     Write-Output "Errore" > "C:\\Temp\\Errore_create_org.txt"
+# }
 

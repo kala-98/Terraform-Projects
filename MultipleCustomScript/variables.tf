@@ -34,6 +34,8 @@ variable "win_username_server" {
 }
 
 
+
+
 variable "Domain_DNSName" {
   description = "FQDN for the Active Directory forest root domain"
   type        = string
