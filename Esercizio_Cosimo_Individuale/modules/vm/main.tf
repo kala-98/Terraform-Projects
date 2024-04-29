@@ -112,6 +112,35 @@ data "template_file" "ADDS" {
   }
 }
 
+
+# # Creating organization's structure through ps script
+# resource "azurerm_virtual_machine_extension" "create_org" {
+#   name                 = "create_org"
+# #  resource_group_name  = azurerm_resource_group.main.name
+#   virtual_machine_id   = azurerm_windows_virtual_machine.dc01.id
+#   publisher            = "Microsoft.Compute"
+#   type                 = "CustomScriptExtension"
+#   type_handler_version = "1.9"
+
+#   protected_settings = <<SETTINGS
+#   {    
+#     "commandToExecute": "powershell -command \"[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${base64encode(data.template_file.CREA-AD.rendered)}')) | Out-File -filepath CreaOrganizzazioneAD.ps1\" && powershell -ExecutionPolicy Unrestricted -File CreaOrganizzazioneAD.ps1 -Dom1 ${data.template_file.CREA-AD.vars.Dom1} -Dom2 ${data.template_file.CREA-AD.vars.Dom2} -nomeFileCSV ${data.template_file.CREA-AD.vars.nomeFileCSV}"
+#   }
+#   SETTINGS
+# }
+
+# #Variable input for the CreaOrganizzazioneAD.ps1 script
+# data "template_file" "CREA-AD" {
+#     template = "${file("CreaOrganizzazioneAD.ps1")}"
+#     vars = {
+#         Dom1          = "Dom"
+#         Dom2     = "it"
+#         nomeFileCSV = "Organizzazione.csv"
+#   }
+
+#   depends_on = [ azurerm_virtual_machine_extension.install_ad ]
+# }
+
 ##################################### VM-2 con Join Domain #####################################
 
 # Create Network Security Group and rule
@@ -216,6 +245,8 @@ data "template_file" "JOINDOMAIN_PARAM" {
   }
   depends_on = [ azurerm_virtual_machine_extension.install_ad ]
 }
+
+
 
 ##################################### VM Server della 3° regione con AD #####################################
 
