@@ -290,7 +290,7 @@ data "template_file" "install_scripts2" {
         url = "https://${azurerm_storage_account.sa.name}.blob.core.windows.net/${azurerm_storage_container.sc.name}/${azurerm_storage_blob.script1.name}"
         output = "C:/Temp/script_install_ad.ps1"
         Domain_DNSName = var.Domain2_DNSName
-        Domain_NETBIOSName = var.netbios_name
+        Domain_NETBIOSName = var.netbios2_name
         SafeModeAdministratorPassword = "${data.azurerm_key_vault_secret.password.value}"
 
         #######################################################
@@ -316,7 +316,7 @@ data "template_file" "install_scripts2" {
 
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "myterraformnsgclient01" {
-    name                = "myNetworkSecurityGroup-05"
+    name                = "myNetworkSecurityGroup-03"
     location                     = var.location-1
     resource_group_name          = var.rg_name
 
@@ -414,7 +414,7 @@ data "template_file" "JOINDOMAIN_PARAM" {
 
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "myterraformnsg_server3" {
-    name                = "myNetworkSecurityGroup-06"
+    name                = "myNetworkSecurityGroup-04"
     location                     = var.location-2
     resource_group_name          = var.rg_name
 
@@ -441,7 +441,9 @@ resource "azurerm_network_interface" "dc03_nic" {
   ip_configuration {
     name                          = "dc03_nic"
     subnet_id                     = data.azurerm_subnet.secondvnetsub1.id
-    private_ip_address_allocation = "Dynamic"
+    #private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address = "10.20.0.4"
   }
 
   depends_on = [ azurerm_network_interface.dc03_nic ]

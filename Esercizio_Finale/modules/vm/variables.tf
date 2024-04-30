@@ -27,7 +27,7 @@ variable "win_username_server_1" {
   description = "Windows node username"
   type        = string
   sensitive   = false
-  default = "fsAdmin"
+  default = "pdc01Admin"
 }
 
 variable "win_username_client_1" {
@@ -41,14 +41,14 @@ variable "win_username_server_2" {
   description = "Windows node username"
   type        = string
   sensitive   = false
-  default = "fsAdmin"
+  default = "pdc02Admin"
 }
 
 variable "win_username_server_3" {
   description = "Windows node username"
   type        = string
   sensitive   = false
-  default = "pdc01Admin"
+  default = "fs01Admin"
 }
 
 
@@ -71,6 +71,13 @@ variable "netbios_name" {
   type        = string
   sensitive   = false
   default = "dom01"
+}
+
+variable "netbios2_name" {
+  description = "NETBIOS name for the AD domain"
+  type        = string
+  sensitive   = false
+  default = "dom02"
 }
 
 variable "vm_size" {
