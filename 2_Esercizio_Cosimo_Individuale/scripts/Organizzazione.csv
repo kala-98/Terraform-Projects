@@ -1,0 +1,9 @@
+﻿UO;Gruppo;Nome;Cognome;email;pwd;Sam;Ruolo
+Direzione;DG;Alberto;Rossi;ar@dom1.net;1YPnA*FvPp#2an;ar;Direttore Generale
+Direzione;DG;Anna;Bianchi;ab@dom1.net;1YPnA*FvPp#2an;ab;Segreteria
+Servizi IT;IT;Andrea;Verdi;av@dom1.net;1YPnA*FvPp#2an;av;Resp. IT
+Servizi IT;System-Engineer;Giovanni;Verdini;gv@dom1.net;1YPnA*FvPp#2an;gv;Sistemista
+Servizi IT;System-Engineer;Giovanni;Neri;gn@dom1.net;1YPnA*FvPp#2an;gn;Sistemista
+Servizi IT;DevOps;Luca;Verdini;lv@dom1.net;1YPnA*FvPp#2an;lv;Programmatore
+Servizi IT;DevOps;Mario;Gialli;mg@dom1.net;1YPnA*FvPp#2an;mg;Programmatore
+Servizi IT;DevOps;Dario;Pollastro;dp01@dom1.net;1YPnA*FvPp#2an;dp01;Programmatore

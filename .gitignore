@@ -1,0 +1,11 @@
+.terraform/
+.terraform.lock.hcl
+*.pdf
+id_rsa*
+*.out
+terraform*
+test.txt
+example.txt
+ImportaOrganizzazioneCSV/
+Esercizio.zip
+esercizio-terraform-vpn-alessandro/
